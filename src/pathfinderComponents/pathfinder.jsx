@@ -71,7 +71,84 @@ class Pathfinder extends Component {
         );
     }
 
-   
+   handleMouseDown = (row, col) => {
+        if((this.state.startNode.row!==row  this.state.startNode.col!==col) && (this.state.endNode.row!==row  this.state.endNode.col!==col) ){
+            const newGrid = getNewGridWithWallToggled(this.state.grid, row, col);
+            this.setState({grid:newGrid});
+        }
+        this.setState({mouseIsPressed: true});
+    }
+
+    handleMouseEnter = (row, col) => {
+        if (this.state.mouseIsPressed === false) return;
+        if((this.state.startNode.row!==row  this.state.startNode.col!==col) && (this.state.endNode.row!==row  this.state.endNode.col!==col) ){
+            const newGrid = getNewGridWithWallToggled(this.state.grid, row, col);
+            this.setState({grid:newGrid});
+        }
+    }
+
+    handleMouseUp = (row,col) => {
+        this.setState({mouseIsPressed: false});
+    }
+
+    handleAlgoChanged = (val) =>{
+        this.setState({algo:val});
+    }
+
+    handleMazeChanged = (val)=>{
+        this.setState({maze:val});
+    }
+
+    handleCreateMaze = () =>{
+        let pairs;
+        switch (this.state.maze){
+            case 1:
+                pairs= randomMaze(this.state.grid,this.state.row,this.state.col);
+                break;
+            default:
+                pairs= getMaze(this.state.grid,this.state.row,this.state.col);
+        }
+        const {startNode,endNode} = this.state;
+        for( let i = 0;i<pairs.length;i++ ){
+            setTimeout(()=>{
+                if( i === pairs.length-1 ){
+                   // this.setState({grid:this.state.grid});
+                    const grid = this.state.grid;
+                    grid[ startNode.row ][startNode.col]={...grid[ startNode.row ][startNode.col],isWall: false};
+                    grid[endNode.row][endNode.col]={...grid[endNode.row][endNode.col],isWall: false};
+                    this.setState({grid});
+                }
+                if((pairs[i].xx!==startNode.row  pairs[i].yy!==startNode.col) && (pairs[i].xx!==endNode.row  pairs[i].yy!==endNode.col) ){
+                    document.getElementById(`node-${pairs[i].xx}-${pairs[i].yy}`).className = "node node-wall";
+                }
+            },i*20);
+        }
+    }
+    handleClearBoard = ()=>{
+        const {grid,row,col} = this.state;
+        this.setState({grid:clearBoard(grid,row,col)});
+    }
+    handleClearPath = () =>{
+        const {grid,row,col} = this.state;
+        this.setState({grid:clearPath(grid,row,col)});
+    }
+    handleClick = () =>{
+      /*  for(let i = 0;i<20;i++){
+            for(let j = 0; j<50;j++){
+                document.getElementById(`node-${i}-${j}`).className = "node";
+            }
+        }*/
+        this.visualizeDijkstra();
+        /*for(let i = 0;i<this.state.row;i++){
+            for(let j = 0; j<this.state.col;j++){
+                setTimeout(()=>{
+                    const newGrid = toggleVisit(this.state.grid,i,j);
+                    this.setState({grid:newGrid});
+                    //document.getElementById(`node-${i}-${j}`).className = "node node-visited";
+                },100*(i+j)+j);
+            }
+        }*/
+    }
 
     visualizeDijkstra() {
         const {grid} = this.state;
