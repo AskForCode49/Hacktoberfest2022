@@ -107,7 +107,85 @@ class RecursiveSort extends Component {
 
     }
 
-   
+   handleQuick = async (steps) =>{
+        this.setState({isRunning: true});
+        let prevRect = this.state.rects;
+        for (let j = 0; j < this.state.count; j++) {
+            prevRect[j] = {...prevRect[j], isLeft: false,isSorting: false,isRight:false,isRange:false,isSorted: false};
+        }
+        this.setState({rects: prevRect});
+        let hasChanged = -1;
+        let changed;
+        for(let i=0;i<steps.length;i++){
+            let step = steps[i];
+            if( hasChanged!==-1 ){
+                let {left,right} = changed;
+                prevRect[left] = {...prevRect[left], isLeft: false,isSorting: false,isRight:false,isRange:false};
+                prevRect[right] = {...prevRect[right], isLeft: false,isSorting: false,isRight:false,isRange:false};
+            }
+            if( step.changedRange ){
+                await sleep(this.state.speed);await sleep(this.state.speed);await sleep(this.state.speed);await sleep(this.state.speed);
+                let {left,right} = step;
+                for (let j = 0; j < this.state.count; j++) {
+                    prevRect[j] = {...prevRect[j], isLeft: false,isSorting: false,isRight:false,isRange:false};
+                }
+                for (let j = left; j <=right; j++) {
+                    prevRect[j] = {...prevRect[j], isLeft: false,isSorting: false,isRight:true,isRange:true};
+                }
+                this.setState({rects: prevRect});
+                await sleep(this.state.speed);await sleep(this.state.speed);await sleep(this.state.speed);await sleep(this.state.speed);
+                for (let j = 0; j < this.state.count; j++) {
+                    prevRect[j] = {...prevRect[j], isLeft: false,isSorting: false,isRight:false};
+                }
+            }else if(step.swap){
+                let {left,right} = step;
+                prevRect[left] = {...prevRect[left], isLeft: false,isSorting: true,isRight:false,isRange:false};
+                prevRect[right] = {...prevRect[right], isLeft: true,isSorting: false,isRight:false,isRange:false};
+                let temp = prevRect[left];
+                prevRect[left] = prevRect[right];
+                prevRect[right] = temp;
+                hasChanged = 1;
+                changed = step;
+            }
+            this.setState({rects: prevRect});
+            await sleep(this.state.speed);
+            if (i === steps.length - 1) {
+                for (let j = 0; j < this.state.count; j++) {
+                    prevRect[j] = {...prevRect[j], isLeft: false,isSorting: false,isRight:false,isSorted: false,isRange:false};
+                }
+                this.setState({rects: prevRect});
+                for (let j = 0; j < this.state.count; j++) {
+                    prevRect[j] = {...prevRect[j], isLeft: false,isSorting: false,isRight:false,isSorted: true,isRange:false};
+                    this.setState({rects: prevRect});
+                    await sleep(10);
+                }
+                this.setState({isRunning: false,rects: prevRect});
+            }
+        }
+    }
+    handleHeap = async (steps) =>{
+        this.setState({isRunning: true});
+        let prevRect = this.state.rects;
+        for (let j = 0; j < this.state.count; j++) {
+            prevRect[j] = {...prevRect[j], isLeft: false,isSorting: false,isRight:false,isRange:false,isSorted: false};
+        }
+        this.setState({rects: prevRect});
+
+        for(let i = 0;i<steps.length;i++){
+            let step = steps[i];
+            //   console.log(step);
+            for (let i = 0; i < this.state.count; i++) {
+                prevRect[i] = {...prevRect[i], isLeft: false,isSorting: false,isRight:false};
+            }
+            let {left,right,sorted} = step;
+            prevRect[left] = {...prevRect[left],isLeft:true};
+            prevRect[right] = {...prevRect[right],isRight:true};
+            this.setState({rects: prevRect});
+            await sleep(this.state.speed);
+            let temp = prevRect[left];
+            prevRect[left] = prevRect[right];
+            prevRect[right] = temp;
+            this.setState({rects: prevRect});
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
