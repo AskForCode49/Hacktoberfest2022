@@ -107,7 +107,89 @@ class Queen extends Component {
 
 }
 
+export default Queen;
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+const turnOffAttack = (board,N) =>{
+    const newBoard = board.slice();
+    for( let i = 0;i<N; i++ ){
+        for( let j = 0;j<N;j++ ){
+            newBoard[i][j] = {...newBoard[i][j],isChecked:false, isAttacked:false,isCurrent:false};
+        }
+    }
+    return newBoard;
+}
 
+const getChecked = (board,row,col,N) =>{
+    const newBoard = board.slice();
+    let pos = true;
+    // same col
+    for( let i = 0;i < N;i++ ){
+        if( newBoard[row][i].isPresent ){
+            newBoard[row][i] = {...newBoard[row][i],isAttacked:true};
+            pos = false;
+        } else{
+            newBoard[row][i] = {...newBoard[row][i],isChecked:true};
+        }
+    }
+    // same row
+    for( let i = 0;i < N;i++ ){
+        if( newBoard[i][col].isPresent ){
+            newBoard[i][col] = {...newBoard[i][col],isAttacked:true};
+            pos = false;
+        } else{
+            newBoard[i][col] = {...newBoard[i][col],isChecked:true};
+        }
+    }
+    for( let i = row,j = col; i >= 0 && j >= 0; i--, j--){
+        if( newBoard[i][j].isPresent ){
+            newBoard[i][j] = {...newBoard[i][j],isAttacked:true};
+            pos = false;
+        } else{
+            newBoard[i][j] = {...newBoard[i][j],isChecked:true};
+        }
+    }
+    for( let i = row,j = col; i <N && j >= 0; i++, j--){
+        if( newBoard[i][j].isPresent ){
+            newBoard[i][j] = {...newBoard[i][j],isAttacked:true};
+            pos = false;
+        } else{
+            newBoard[i][j] = {...newBoard[i][j],isChecked:true};
+        }
+    }
+    for( let i = row,j = col; i <N && j < N; i++, j++){
+        if( newBoard[i][j].isPresent ){
+            newBoard[i][j] = {...newBoard[i][j],isAttacked:true};
+            pos = false;
+        } else{
+            newBoard[i][j] = {...newBoard[i][j],isChecked:true};
+        }
+    }
+    for( let i = row,j = col; i>=0 && j < N; i--, j++){
+        if( newBoard[i][j].isPresent ){
+            newBoard[i][j] = {...newBoard[i][j],isAttacked:true};
+            pos = false;
+        } else{
+            newBoard[i][j] = {...newBoard[i][j],isChecked:true};
+        }
+    }
+
+    newBoard[row][col] = {...newBoard[row][col],isPresent:true,isCurrent:true};
+
+    return [newBoard,pos];
+}
+const getBoard = (N) =>{
+    const rows = [];
+    for( let i = 0;i<N;i++ ){
+        const cols = [];
+        for(let j =0;j<N;j++){
+            cols.push(getCell(i,j));
+        }
+        rows.push(cols);
+    }
+    return rows;
+}
 
 const getCell = (row,col)=>{
     return{
