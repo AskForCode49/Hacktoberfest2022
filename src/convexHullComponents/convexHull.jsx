@@ -77,28 +77,5 @@ class ConvexHull extends Component {
         this.setState(dots);
     }
 }
-function getNewDots(number){
-    const dots= [];
-    for(let  i = 0; i<number;i++){
-        dots.push(getDot());
-    }
-    dots.sort( (a,b) => {
-       if( a.xx!==b.xx ){
-           return a.xx-b.xx;
-       } else{
-           return a.yy - b.yy;
-       }
-    } );
-    return dots;
-}
-function getDot(){
-    const width = window.innerWidth-50;
-    const height = window.innerHeight-250;
-    const rowpos = Math.floor( Math.random()*height )+25;
-    const colpos = Math.floor(Math.random()*width)+25;
-    return {
-        xx:colpos,
-        yy:rowpos,
-    }
-}
+
 export default ConvexHull;
